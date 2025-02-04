@@ -45,6 +45,7 @@ class SalesPortalAPI(http.Controller):
                 customer_identifier = request.env['res.partner'].sudo().create({
                     'name': customer,
                     'create_uid': user.id,
+                    'customer_rank': 1,
                 })
 
             # Create Sale Order
@@ -54,6 +55,9 @@ class SalesPortalAPI(http.Controller):
                 'user_id': user.id,
                 'order_line': order_lines
             })
+            # ✅ Automatically Create Invoice using Odoo's Method
+            invoice = order._create_invoices()
+            invoice.action_post()
 
             # Confirm Order (moves to 'sale' state)
             order.action_confirm()
